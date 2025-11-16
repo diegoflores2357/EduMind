@@ -1,0 +1,81 @@
+:root {
+    --fuente: "Roboto", sans-serif;
+
+    --body: #1c1c1e;
+    --texto: #f9f9f9;
+    --focus: #007aff;
+    --btn: #00bb2d;
+}
+
+html {
+    box-sizing: border-box;
+    font-size: 62.5%;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+body {
+    font-size: 1.6rem;
+    line-height: 1.5;
+    background-color: var(--body);
+    color: var(--texto);
+
+    /* Mantiene el footer hasta abajo */
+    display: grid;
+    min-height: 100dvh;
+    grid-template-rows: auto 1fr auto;
+}
+
+/* Globales */
+.contenedor {
+    max-width: 120rem;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.btn {
+    font-size: 1.8rem;
+    background-color: var(--btn);
+    border: none;
+    padding: .1rem 1rem;
+    color: #e1e1e1;
+    border-radius: .3rem;
+    cursor: pointer;
+}
+
+.btn:hover {
+    opacity: .9;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    color: var(--focus);
+    font-size: 5rem;
+    text-transform: uppercase;
+}
+
+.nav-principal {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-principal a {
+    text-decoration: none;
+    color: var(--texto);
+    font-size: 2rem;
+}
+
+.nav-principal a:hover {
+    opacity: .8;
+}

@@ -1,0 +1,53 @@
+const home = document.querySelector('#home');
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contactar Maestro</title>
+    <link rel="stylesheet" href="../styles/normalize.css">
+    <link rel="stylesheet" href="../styles/administración/contactoMaestro.css">
+</head>
+<script src="../src/auth/verificarAuth.js"></script>
+<script src="../src/contactoMaestro.js"></script>
+<body>
+    <main class="contenedor" id="contacto">
+        <img id="home" class="icon" src="../icons/home.svg" alt="icono">
+        <div class="encabezado">
+            <h2>Contacta a tu maestro</h2>
+            <p>Envia tu mensaje y espera tu respuesta</p>
+        </div>
+
+        <form class="contacto contenedor" id="formulario">
+            <div class="item">
+                <label>Maestro: </label>
+                <select id="maestro" required>
+                    <option value="" disabled selected>--Seleccione una opcion--</option>
+                    <option value="maestro1">Maestro Rafael</option>
+                    <option value="maestro2">Maestro Gerardo</option>
+                    <option value="maestro3">Maestra Erika</option>
+                </select>
+            </div>
+
+            <div class="item">
+                <label>Asunto: </label>
+                <input type="text" id="asunto" placeholder="Asunto..." required>
+            </div>
+
+            <div class="item-textarea">
+                <label>Mensaje:</label>
+                <textarea id="mensaje" rows="2" placeholder="Escribe tu mensaje"></textarea>
+            </div>
+
+            <div class="btns">
+                <button class="enviar" id="enviar" type="submit" disabled>Enviar</button>
+                <button class="enviar" id="reset" type="reset">Limpiar campos</button>
+            </div>
+        </form>
+    </main>
+
+    <script src="../src/contactoMaestro.js"></script>
+</body>
+
+</html>

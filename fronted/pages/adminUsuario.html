@@ -1,0 +1,67 @@
+<body>
+    <main class="informacion">
+        <div class="iconos">
+            <a href="inicio.html">
+                <img class="home" src="../icons/home.svg" alt="home">
+            </a>
+            <button id="salirSesion" class="btn">Cerrar Sesión</button>
+        </div>
+
+        <div class="info-usr contenedor">
+            <div class="info-item">
+                <input type="text" id="name" placeholder="Nombre" disabled>
+                <p>Nombre (s)</p>
+            </div>
+
+            <div class="info-item">
+                <input type="text" id="apellidoP" placeholder="Apellido" disabled>
+                <p>Apellido Paterno</p>
+            </div>
+
+            <div class="info-item">
+                <input type="text" id="apellidoM" placeholder="Apellido" disabled>
+                <p>Apellido Materno</p>
+            </div>
+
+            <div class="info-item">
+                <input type="text" id="matricula" placeholder="Matrícula" disabled>
+                <p>Matricula</p>
+            </div>
+        </div>
+    </main>
+
+    <div class="funciones contenedor">
+        <aside class="aside">
+            <a class="aside-item" href="chatbot.html">ChatBot</a>
+            <a class="aside-item" href="temas.html">Contenido de Aprendizaje</a>
+            <a class="aside-item" href="ejercicios.html">Ejercicios Prácticos</a>
+            <a class="aside-item" href="contactoMaestro.html">Contactar maestro</a>
+            <a class="aside-item" href="contactoSoporte.html">Soporte técnico</a>
+        </aside>
+
+        <div class="progreso contenedor">
+            <div class="examenes">
+                <div class="exam-info">
+                    <p>Ejercicios completados</p>
+                    <p class="aprobados" id="ejerciciosCompletados">0</p>
+                </div>
+                <div class="exam-info">
+                    <p>Ejercicios pendientes</p>
+                    <p class="reprobados" id="ejerciciosPendientes">0</p>
+                </div>
+                <div class="exam-info">
+                    <p>Total ejercicios</p>
+                    <p class="total" id="totalEjercicios">0</p>
+                </div>
+                <div class="exam-info">
+                    <p>Progreso</p>
+                    <p class="carrera" id="progreso">0%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AGREGAR ESTOS SCRIPTS -->
+    <script src="../src/auth/verificarAuth.js"></script>
+    <script src="../src/admin/cargarPerfil.js"></script>
+</body>

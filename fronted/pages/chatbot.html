@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../styles/normalize.css">
+    <link rel="stylesheet" href="../styles/chatbot.css">
+</head>
+
+<body>
+    <div class="chatbot">
+        <aside class="aside" id="aside">
+            <div class="encabezado">
+                <a href="../pages/adminUsuario.html">
+                    <img class="icon" id="home" src="../icons/home.svg" alt="icon">
+                </a>
+                <button class="nuevo-chat" id="nuevo">Nuevo Chat</button>
+            </div>
+
+            <div id="chats">
+                <div class="item">
+                    <p>Bienvenido</p>
+                    <img class="icon" id="delChat" src="../icons/delete-chat.svg" alt="icon">
+                </div>
+            </div>
+        </aside>
+
+        <div id="divChat" class="chat">
+            <p class="chat-bot">Bienvenido usuario</p>
+        </div>
+
+        <div class="input-container">
+            <input id="inputUser" class="input" type="text" placeholder="Ingrese una instruccion">
+            <button id="btnEnviar" class="enviar">Enviar</button>
+        </div>
+    </div>
+   <script src="../src/auth/verificarAuth.js"></script>
+<script src="../src/chatbot/chat-api.js"></script>
+</body>
+
+</html>
