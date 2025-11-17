@@ -1,8 +1,15 @@
 {
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "src": "/",
-      "dest": "/pages/inicio.html"
+      "src": "chatbot/fronted/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "source": "/(.*)",
+      "destination": "chatbot/fronted/$1"
     }
   ]
 }
