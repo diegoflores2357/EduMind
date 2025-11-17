@@ -1,5 +1,5 @@
 // frontend/src/auth/login.js
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://edumind-production-41b6.up.railway.app/';
 
 const formLogin = document.getElementById('formLogin');
 const btnLogin = document.getElementById('btnLogin');

@@ -1,5 +1,5 @@
 // frontend/src/admin/cargarPerfil.js
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://edumind-production-41b6.up.railway.app/c';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('token');

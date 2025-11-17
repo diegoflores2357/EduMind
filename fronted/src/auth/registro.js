@@ -1,5 +1,5 @@
 // frontend/src/auth/registro.js
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://edumind-production-41b6.up.railway.app/';
 
 const formRegistro = document.getElementById('formRegistro');
 const btnRegistro = document.getElementById('btnRegistro');
