@@ -1,5 +1,10 @@
 // frontend/src/admin/cargarPerfil.js
-const API_URL = 'edumind-production-41b6.up.railway.app';
+const isLocal = window.location.hostname === 'localhost' || 
+                window.location.hostname === '127.0.0.1';
+
+const API_URL = isLocal 
+    ? 'http://localhost:3000/api'
+    : 'https://edumind-production-41b6.up.railway.app/api';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('token');
@@ -10,6 +15,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     
     try {
+        console.log('🔗 Cargando perfil desde:', `${API_URL}/auth/perfil`);
+        
         const response = await fetch(`${API_URL}/auth/perfil`, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -23,6 +30,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const data = await response.json();
         const usuario = data.usuario;
         
+        console.log('✅ Perfil cargado:', usuario);
+        
         // Llenar los campos
         document.getElementById('name').value = usuario.nombre;
         document.getElementById('apellidoP').value = usuario.apellidoPaterno;
@@ -33,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         localStorage.setItem('usuario', JSON.stringify(usuario));
         
     } catch (error) {
-        console.error('Error al cargar perfil:', error);
+        console.error('❌ Error al cargar perfil:', error);
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');
         window.location.href = 'login.html';
