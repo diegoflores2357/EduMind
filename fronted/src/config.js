@@ -1,8 +1,11 @@
-const isProduction = window.location.hostname !== 'localhost' && 
-                     window.location.hostname !== '127.0.0.1';
+const isLocal = window.location.hostname === 'localhost' || 
+                window.location.hostname === '127.0.0.1';
 
-const API_URL = isProduction 
-  ? 'https://tu-proyecto.up.railway.app/aphttps://edumind-production-41b6.up.railway.app/i'
-  : 'http://localhost:3000/api';
+const API_URL = isLocal 
+  ? 'http://localhost:3000/api'
+  : 'edumind-production-41b6.up.railway.app/api';  
 
-export default API_URL;
+console.log('🌐 Entorno:', isLocal ? 'DESARROLLO' : 'PRODUCCIÓN');
+console.log('🔗 API URL:', API_URL);
+
+window.API_CONFIG = { API_URL, isLocal };
