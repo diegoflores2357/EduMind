@@ -1,5 +1,5 @@
-// frontend/src/auth/registro.js
-const API_URL = 'https://edumind-production-41b6.up.railway.app';
+// fronted/src/auth/registro.js
+const API_URL = window.API_CONFIG?.API_URL || 'http://localhost:3000/api';
 
 const formRegistro = document.getElementById('formRegistro');
 const btnRegistro = document.getElementById('btnRegistro');
@@ -9,13 +9,11 @@ const mensajeExito = document.getElementById('mensajeExito');
 formRegistro.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Limpiar mensajes
     mensajeError.style.display = 'none';
     mensajeExito.style.display = 'none';
     btnRegistro.disabled = true;
     btnRegistro.textContent = 'Registrando...';
     
-    // Obtener valores
     const datos = {
         nombre: document.getElementById('nombre').value.trim(),
         apellidoPaterno: document.getElementById('apellidoPaterno').value.trim(),
@@ -29,7 +27,6 @@ formRegistro.addEventListener('submit', async (e) => {
     
     const confirmarPassword = document.getElementById('confirmarPassword').value;
     
-    // Validar contraseñas coinciden
     if (datos.password !== confirmarPassword) {
         mostrarError('Las contraseñas no coinciden');
         btnRegistro.disabled = false;
@@ -37,7 +34,6 @@ formRegistro.addEventListener('submit', async (e) => {
         return;
     }
     
-    // Validar edad (mayor de 13 años)
     const edad = calcularEdad(datos.fechaNacimiento);
     if (edad < 13) {
         mostrarError('Debes tener al menos 13 años para registrarte');
@@ -47,6 +43,8 @@ formRegistro.addEventListener('submit', async (e) => {
     }
     
     try {
+        console.log('🔗 Intentando registrar en:', `${API_URL}/auth/registro`);
+        
         const response = await fetch(`${API_URL}/auth/registro`, {
             method: 'POST',
             headers: {
@@ -61,20 +59,17 @@ formRegistro.addEventListener('submit', async (e) => {
             throw new Error(data.error || 'Error al registrar usuario');
         }
         
-        // Guardar token y datos del usuario
         localStorage.setItem('token', data.token);
         localStorage.setItem('usuario', JSON.stringify(data.usuario));
         
-        // Mostrar mensaje de éxito
         mostrarExito('¡Registro exitoso! Redirigiendo...');
         
-        // Redirigir después de 2 segundos
         setTimeout(() => {
             window.location.href = 'adminUsuario.html';
         }, 2000);
         
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Error completo:', error);
         mostrarError(error.message);
         btnRegistro.disabled = false;
         btnRegistro.textContent = 'Registrarse';

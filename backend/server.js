@@ -18,11 +18,12 @@ app.use(cors({
     origin: [
         'http://localhost:5500',
         'http://127.0.0.1:5500',
-        'https://edumind-zeta.vercel.app',  // ← Tu URL de Vercel
+        'https://edu-mind-eosin.vercel.app',  // ← Tu URL EXACTA
         'https://*.vercel.app'
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
