@@ -18,7 +18,7 @@ app.use(cors({
     origin: [
         'http://localhost:5500',
         'http://127.0.0.1:5500',
-        'https://edu-mind-eosin.vercel.app',  // ← Tu URL EXACTA
+        'edumind-production-41b6.up.railway.app',  
         'https://*.vercel.app'
     ],
     credentials: true,
