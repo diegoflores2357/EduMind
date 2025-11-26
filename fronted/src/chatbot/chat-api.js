@@ -378,19 +378,14 @@ async function eliminarConversacion(id) {
 // ========================================
 
 // Evento click en botón enviar
-if (btnEnviar) {
-    btnEnviar.addEventListener('click', enviarMensaje);
-}
+btnEnviar.addEventListener('click', enviarMensaje);
 
-// Evento Enter en input
-if (input) {
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            enviarMensaje();
-        }
-    });
-}
+input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        enviarMensaje();
+    }
+});
 
 // Cargar conversaciones al iniciar
 document.addEventListener('DOMContentLoaded', () => {
