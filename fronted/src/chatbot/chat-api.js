@@ -7,10 +7,10 @@ const API_URL = window.location.hostname === 'localhost'
     : 'https://edumind-production-41b6.up.railway.app/api';
 
 // DOM Elements
-const divChat = document.getElementById('divChat');
+const divChat = document.getElementById('chat-container');
 const input = document.getElementById('inputUser');
 const btnEnviar = document.getElementById('btnEnviar');
-const contenedorChats = document.getElementById('chats');
+const contenedorChats = document.getElementById('chat-list');
 
 // Estado
 let conversacionActual = null;
