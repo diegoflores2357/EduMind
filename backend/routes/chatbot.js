@@ -1,11 +1,10 @@
-// backend/routes/chatbot.js
 const express = require('express');
 const router = express.Router();
 const { protegerRuta } = require('../middleware/auth');
 const Conversacion = require('../models/Conversacion');
 const { enviarMensajeGemini } = require('../services/geminiService');
 
-// GET /api/chatbot/conversaciones - Obtener historial
+// GET /api/chatbot/conversaciones
 router.get('/conversaciones', protegerRuta, async (req, res) => {
     try {
         const conversaciones = await Conversacion.find({ 
@@ -13,36 +12,36 @@ router.get('/conversaciones', protegerRuta, async (req, res) => {
             activa: true
         })
         .sort({ ultimaActividad: -1 })
-        .select('titulo ultimaActividad mensajes')
         .limit(20);
         
         res.json({ conversaciones });
     } catch (error) {
-        console.error('Error al obtener conversaciones:', error);
+        console.error('Error:', error);
         res.status(500).json({ error: 'Error al obtener conversaciones' });
     }
 });
 
-// GET /api/chatbot/conversacion/:id - Obtener una conversación específica
-router.get('/conversacion/:id', protegerRuta, async (req, res) => {
+// POST /api/chatbot/nueva - Crear nueva conversación
+router.post('/nueva', protegerRuta, async (req, res) => {
     try {
-        const conversacion = await Conversacion.findOne({
-            _id: req.params.id,
-            usuario: req.usuario._id
+        const conversacion = await Conversacion.create({
+            usuario: req.usuario._id,
+            titulo: 'Nueva conversación',
+            mensajes: [{
+                rol: 'assistant',
+                contenido: '¡Hola! Soy tu asistente de programación. ¿En qué puedo ayudarte?',
+                timestamp: new Date()
+            }]
         });
-        
-        if (!conversacion) {
-            return res.status(404).json({ error: 'Conversación no encontrada' });
-        }
         
         res.json({ conversacion });
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ error: 'Error al obtener conversación' });
+        res.status(500).json({ error: 'Error al crear conversación' });
     }
 });
 
-// POST /api/chatbot/mensaje - Enviar mensaje al chatbot
+// POST /api/chatbot/mensaje
 router.post('/mensaje', protegerRuta, async (req, res) => {
     try {
         const { mensaje, conversacionId } = req.body;
@@ -53,7 +52,6 @@ router.post('/mensaje', protegerRuta, async (req, res) => {
         
         let conversacion;
         
-        // Si hay conversacionId, buscar la conversación existente
         if (conversacionId) {
             conversacion = await Conversacion.findOne({
                 _id: conversacionId,
@@ -64,7 +62,7 @@ router.post('/mensaje', protegerRuta, async (req, res) => {
                 return res.status(404).json({ error: 'Conversación no encontrada' });
             }
         } else {
-            // Crear nueva conversación
+            // Crear nueva conversación si no existe
             const titulo = mensaje.length > 30 
                 ? mensaje.substring(0, 30) + '...' 
                 : mensaje;
@@ -82,7 +80,7 @@ router.post('/mensaje', protegerRuta, async (req, res) => {
             contenido: mensaje
         });
         
-        // Obtener respuesta de Gemini con contexto
+        // Obtener respuesta de Gemini
         const respuestaIA = await enviarMensajeGemini(
             mensaje, 
             conversacion.mensajes
@@ -94,7 +92,6 @@ router.post('/mensaje', protegerRuta, async (req, res) => {
             contenido: respuestaIA
         });
         
-        // Actualizar última actividad
         conversacion.ultimaActividad = Date.now();
         await conversacion.save();
         
@@ -105,31 +102,11 @@ router.post('/mensaje', protegerRuta, async (req, res) => {
         });
         
     } catch (error) {
-        console.error('Error al procesar mensaje:', error);
+        console.error('Error:', error);
         res.status(500).json({ 
             error: 'Error al procesar mensaje',
             detalle: error.message 
         });
-    }
-});
-
-// DELETE /api/chatbot/conversacion/:id - Eliminar conversación
-router.delete('/conversacion/:id', protegerRuta, async (req, res) => {
-    try {
-        const conversacion = await Conversacion.findOneAndUpdate(
-            { _id: req.params.id, usuario: req.usuario._id },
-            { activa: false },
-            { new: true }
-        );
-        
-        if (!conversacion) {
-            return res.status(404).json({ error: 'Conversación no encontrada' });
-        }
-        
-        res.json({ mensaje: 'Conversación eliminada' });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Error al eliminar conversación' });
     }
 });
 

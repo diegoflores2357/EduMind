@@ -1,34 +1,175 @@
-// frontend/src/chatbot/chat-api.js
+// ========================================
+// CONFIGURACIÓN Y VARIABLES GLOBALES
+// ========================================
+
 const API_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:3000/api'
     : 'https://edumind-production-41b6.up.railway.app/api';
 
-// Variables globales
+// DOM Elements
 const divChat = document.getElementById('divChat');
 const input = document.getElementById('inputUser');
 const btnEnviar = document.getElementById('btnEnviar');
 const contenedorChats = document.getElementById('chats');
 
+// Estado
 let conversacionActual = null;
 
-// Eventos
-if (btnEnviar) {
-    btnEnviar.addEventListener('click', enviarMensaje);
-}
+// ========================================
+// FUNCIONES DE PARSEO (Del compañero)
+// ========================================
 
-if (input) {
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            enviarMensaje();
+/**
+ * Parsear bloques de código con números de línea
+ */
+function parseSimpleCodeBlocks(text) {
+    const codeBlockRegex = /```([\s\S]*?)```/g;
+    
+    return text.replace(codeBlockRegex, (match, code) => {
+        const escapedCode = code.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const lines = escapedCode.trim().split('\n');
+        
+        let lineNumbersHtml = '<div class="line-numbers">';
+        let codeContentHtml = '<div class="code-content"><code>';
+        
+        for (let i = 0; i < lines.length; i++) {
+            lineNumbersHtml += `<div>${i + 1}</div>`;
+            codeContentHtml += lines[i] + (i < lines.length - 1 ? '\n' : ''); 
         }
+        
+        lineNumbersHtml += '</div>';
+        codeContentHtml += '</code></div>';
+        
+        return `<pre>${lineNumbersHtml}${codeContentHtml}</pre>`;
     });
 }
 
-// Cargar conversaciones al iniciar
-document.addEventListener('DOMContentLoaded', () => {
-    cargarConversaciones();
-});
+/**
+ * Parsear Markdown simple (negritas, listas)
+ */
+function parseSimpleTextMarkdown(text) {
+    // 1. Negritas (**texto**)
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // 2. Código inline (`codigo`)
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+    
+    // 3. Listas desordenadas (- item o * item)
+    const lines = text.split('<br>');
+    let inList = false;
+    let result = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        
+        // Detectar inicio de lista
+        if (line.match(/^(\*|-)\s+(.+)$/)) {
+            if (!inList) {
+                result.push('<ul>');
+                inList = true;
+            }
+            const content = line.replace(/^(\*|-)\s+/, '');
+            result.push(`<li>${content}</li>`);
+        } else {
+            // Línea normal
+            if (inList) {
+                result.push('</ul>');
+                inList = false;
+            }
+            if (line) {
+                result.push(line + '<br>');
+            }
+        }
+    }
+    
+    // Cerrar lista si quedó abierta
+    if (inList) {
+        result.push('</ul>');
+    }
+    
+    return result.join('');
+}
+
+// ========================================
+// FUNCIONES DE INTERFAZ (Mejoradas)
+// ========================================
+
+/**
+ * Mostrar mensaje del usuario en el chat
+ */
+function mostrarMensajeUsuario(texto) {
+    const messageWrapper = document.createElement('div');
+    messageWrapper.className = 'flex justify-end mb-3';
+    
+    const p = document.createElement('p');
+    p.classList.add('chat-user');
+    
+    // Solo reemplazar saltos de línea
+    const htmlContent = texto.replace(/\n/g, '<br>');
+    p.innerHTML = htmlContent;
+    
+    messageWrapper.appendChild(p);
+    divChat.appendChild(messageWrapper);
+    divChat.scrollTop = divChat.scrollHeight;
+}
+
+/**
+ * Mostrar mensaje del bot en el chat (CON PARSEO)
+ */
+function mostrarMensajeBot(texto) {
+    const messageWrapper = document.createElement('div');
+    messageWrapper.className = 'flex justify-start mb-3';
+    
+    const p = document.createElement('p');
+    p.classList.add('chat-bot');
+    
+    let htmlContent = texto;
+    
+    // 1. Parsear bloques de código PRIMERO (para evitar conflictos)
+    htmlContent = parseSimpleCodeBlocks(htmlContent);
+    
+    // 2. Reemplazar saltos de línea por <br>
+    htmlContent = htmlContent.replace(/\n/g, '<br>');
+    
+    // 3. Parsear Markdown (negritas, listas, código inline)
+    htmlContent = parseSimpleTextMarkdown(htmlContent);
+    
+    p.innerHTML = htmlContent;
+    messageWrapper.appendChild(p);
+    divChat.appendChild(messageWrapper);
+    
+    // 4. Renderizar fórmulas LaTeX (si MathJax está disponible)
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        MathJax.typesetPromise([p]).catch(err => {
+            console.warn('MathJax rendering error:', err);
+        });
+    }
+    
+    divChat.scrollTop = divChat.scrollHeight;
+}
+
+/**
+ * Mostrar indicador de "escribiendo..."
+ */
+function mostrarIndicadorEscribiendo() {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'flex justify-start mb-3';
+    wrapper.id = 'loading-indicator';
+    
+    const p = document.createElement('p');
+    p.classList.add('chat-bot', 'escribiendo');
+    p.innerHTML = '<span>●</span><span>●</span><span>●</span>';
+    
+    wrapper.appendChild(p);
+    divChat.appendChild(wrapper);
+    divChat.scrollTop = divChat.scrollHeight;
+    
+    return wrapper;
+}
+
+// ========================================
+// FUNCIONES DE BACKEND (Tu lógica original)
+// ========================================
 
 /**
  * Enviar mensaje al chatbot
@@ -36,6 +177,10 @@ document.addEventListener('DOMContentLoaded', () => {
 async function enviarMensaje() {
     const mensaje = input.value.trim();
     if (!mensaje) return;
+    
+    // Deshabilitar input
+    input.disabled = true;
+    btnEnviar.disabled = true;
     
     // Mostrar mensaje del usuario
     mostrarMensajeUsuario(mensaje);
@@ -79,48 +224,30 @@ async function enviarMensaje() {
         // Remover indicador
         indicador.remove();
         
-        // Mostrar respuesta del bot
+        // Mostrar respuesta del bot (CON PARSEO)
         mostrarMensajeBot(data.respuesta);
         
     } catch (error) {
         console.error('Error:', error);
         indicador.remove();
-        mostrarMensajeBot('❌ ' + error.message);
+        
+        // Mostrar error formateado
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'flex justify-start mb-3';
+        errorMsg.innerHTML = `
+            <div class="chat-bot bg-red-900 border border-red-700">
+                ❌ <strong>Error:</strong> ${error.message}
+            </div>
+        `;
+        divChat.appendChild(errorMsg);
+        divChat.scrollTop = divChat.scrollHeight;
+        
+    } finally {
+        // Rehabilitar input
+        input.disabled = false;
+        btnEnviar.disabled = false;
+        input.focus();
     }
-}
-
-/**
- * Mostrar mensaje del usuario en el chat
- */
-function mostrarMensajeUsuario(texto) {
-    const p = document.createElement('p');
-    p.classList.add('chat-user');
-    p.textContent = texto;
-    divChat.appendChild(p);
-    divChat.scrollTop = divChat.scrollHeight;
-}
-
-/**
- * Mostrar mensaje del bot en el chat
- */
-function mostrarMensajeBot(texto) {
-    const p = document.createElement('p');
-    p.classList.add('chat-bot');
-    p.textContent = texto;
-    divChat.appendChild(p);
-    divChat.scrollTop = divChat.scrollHeight;
-}
-
-/**
- * Mostrar indicador de "escribiendo..."
- */
-function mostrarIndicadorEscribiendo() {
-    const p = document.createElement('p');
-    p.classList.add('chat-bot', 'escribiendo');
-    p.innerHTML = '<span>●</span><span>●</span><span>●</span>';
-    divChat.appendChild(p);
-    divChat.scrollTop = divChat.scrollHeight;
-    return p;
 }
 
 /**
@@ -140,7 +267,7 @@ async function cargarConversaciones() {
         
         const { conversaciones } = await response.json();
         
-        // Limpiar contenedor (excepto mensaje de bienvenida)
+        // Limpiar contenedor
         contenedorChats.innerHTML = `
             <div class="item">
                 <p>Bienvenido</p>
@@ -184,12 +311,16 @@ async function cargarConversacion(id) {
             }
         });
         
+        if (!response.ok) {
+            throw new Error('Error al cargar conversación');
+        }
+        
         const { conversacion } = await response.json();
         
         // Limpiar chat
         divChat.innerHTML = '';
         
-        // Mostrar mensajes
+        // Mostrar mensajes CON PARSEO
         conversacion.mensajes.forEach(msg => {
             if (msg.rol === 'user') {
                 mostrarMensajeUsuario(msg.contenido);
@@ -202,6 +333,7 @@ async function cargarConversacion(id) {
         
     } catch (error) {
         console.error('Error:', error);
+        divChat.innerHTML = '<p class="chat-bot bg-red-900">Error al cargar conversación</p>';
     }
 }
 
@@ -211,6 +343,7 @@ async function cargarConversacion(id) {
 function nuevaConversacion() {
     conversacionActual = null;
     divChat.innerHTML = '<p class="chat-bot">¡Hola! ¿En qué puedo ayudarte hoy?</p>';
+    input.focus();
 }
 
 /**
@@ -239,3 +372,27 @@ async function eliminarConversacion(id) {
         console.error('Error:', error);
     }
 }
+
+// ========================================
+// EVENTOS E INICIALIZACIÓN
+// ========================================
+
+// Evento click en botón enviar
+if (btnEnviar) {
+    btnEnviar.addEventListener('click', enviarMensaje);
+}
+
+// Evento Enter en input
+if (input) {
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            enviarMensaje();
+        }
+    });
+}
+
+// Cargar conversaciones al iniciar
+document.addEventListener('DOMContentLoaded', () => {
+    cargarConversaciones();
+});

@@ -1,47 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="../styles/normalize.css">
-    <link rel="stylesheet" href="../styles/chatbot.css">
+    <title>EduMind - ChatBot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+     
+    <!-- MathJax para renderizar LaTeX -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 </head>
-
+    
+    <style>
+        /* Copiar estilos del compañero */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #111827; 
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+        
+        /* ... resto de estilos del compañero ... */
+    </style>
+</head>
 <body>
-    <div class="chatbot">
-        <aside class="aside" id="aside">
-            <div class="encabezado">
-                <a href="../pages/adminUsuario.html">
-                    <img class="icon" id="home" src="../icons/home.svg" alt="icon">
-                </a>
-                <button class="nuevo-chat" id="nuevo">Nuevo Chat</button>
-            </div>
-
-            <div id="chats">
-                <div class="item">
-                    <p>Bienvenido</p>
-                    <img class="icon" id="delChat" src="../icons/delete-chat.svg" alt="icon">
-                </div>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar p-4 text-gray-200">
+            <h2 class="text-xl font-bold mb-4">Conversaciones 💬</h2>
+            <button onclick="newChat()" class="w-full bg-gray-600 py-2 rounded-lg mb-4">
+                ➕ Nueva Conversación
+            </button>
+            <div id="chat-list"></div>
+            
+            <div class="mt-8 pt-4 border-t">
+                <button onclick="cerrarSesion()" class="w-full bg-red-600 py-2 rounded-lg">
+                    🚪 Cerrar Sesión
+                </button>
             </div>
         </aside>
 
-        <div id="divChat" class="chat">
-            <p class="chat-bot">Bienvenido usuario</p>
-        </div>
+        <!-- Chat Principal -->
+        <main class="chat-area flex flex-col">
+            <header class="p-4 bg-gray-800">
+                <h1 class="text-2xl font-bold">EduMind ChatBot</h1>
+            </header>
 
-        <div class="input-container">
-            <input id="inputUser" class="input" type="text" placeholder="Ingrese una instruccion">
-            <button id="btnEnviar" class="enviar">Enviar</button>
-        </div>
+            <div id="chat-container" class="flex-grow p-6 overflow-y-auto"></div>
+
+            <div class="p-6">
+                <div class="flex space-x-3">
+                    <input type="text" id="user-input" 
+                           placeholder="Escribe tu pregunta..." 
+                           class="flex-grow p-3 rounded-lg bg-gray-800">
+                    <button onclick="sendMessage()" 
+                            class="bg-blue-600 px-6 py-3 rounded-lg">
+                        Enviar
+                    </button>
+                </div>
+            </div>
+        </main>
     </div>
-   <script src="../src/auth/verificarAuth.js"></script>
-<script src="../src/chatbot/chat-api.js"></script>
-</body>
 
+    <script src="../src/auth/verificarAuth.js"></script>
+    <script src="../src/chatbot/chat-mejorado.js"></script>
+</body>
 </html>
