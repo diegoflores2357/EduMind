@@ -2,25 +2,37 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const connectDB = require('./config/database');  // ← SIN .js y SIN llaves
+const connectDB = require('./config/database');
 
-// Cargar variables de entorno
 dotenv.config();
 
-// Crear app
 const app = express();
 
-// Conectar a MongoDB
 connectDB();
 
-// Middleware CORS (mejorado)
+// ✅ CORS MEJORADO - Acepta todos los dominios de Vercel
 app.use(cors({
-    origin: [
-        'http://localhost:5500',
-        'http://127.0.0.1:5500',
-        'https://edumind-production-41b6.up.railway.app',  
-        'https://edu-mind-eosin.vercel.app'
-    ],
+    origin: function(origin, callback) {
+        // Permitir requests sin origin (como Postman)
+        if (!origin) return callback(null, true);
+        
+        const allowedOrigins = [
+            'http://localhost:5500',
+            'http://127.0.0.1:5500',
+            'https://edumind-production-41b6.up.railway.app',
+            'https://edu-mind-eosin.vercel.app'
+        ];
+        
+        // Permitir cualquier subdominio de Vercel
+        if (
+            allowedOrigins.includes(origin) || 
+            origin.endsWith('.vercel.app')
+        ) {
+            callback(null, true);
+        } else {
+            callback(new Error('No permitido por CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -31,8 +43,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rutas
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/contenidos', require('./routes/contenidos'));  // ← Agregar si tienes
-app.use('/api/chatbot', require('./routes/chatbot'));        // ← Agregar si tienes
+app.use('/api/contenidos', require('./routes/contenidos'));
+app.use('/api/chatbot', require('./routes/chatbot'));
 
 // Ruta de prueba
 app.get('/api/test', (req, res) => {
@@ -76,9 +88,8 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Iniciar servidor
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {  // ← 0.0.0.0 para Railway
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`\n🚀 Servidor corriendo en puerto ${PORT}`);
     console.log(`📚 API Docs: http://localhost:${PORT}/`);
     console.log(`🔧 Modo: ${process.env.NODE_ENV || 'development'}\n`);

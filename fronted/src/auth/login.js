@@ -2,9 +2,10 @@
 const isLocal = window.location.hostname === 'localhost' || 
                 window.location.hostname === '127.0.0.1';
 
+// ✅ SIN /api al final
 const API_URL = isLocal 
-    ? 'http://localhost:3000/api'
-    : 'https://edumind-production-41b6.up.railway.app/api';
+    ? 'http://localhost:3000'
+    : 'https://edumind-production-41b6.up.railway.app';
 
 const formLogin = document.getElementById('formLogin');
 const btnLogin = document.getElementById('btnLogin');
@@ -23,9 +24,10 @@ formLogin.addEventListener('submit', async (e) => {
     };
     
     try {
-        console.log('🔗 Intentando login en:', `${API_URL}/auth/login`);
         
-        const response = await fetch(`${API_URL}/auth/login`, {
+        console.log('🔗 Intentando login en:', `${API_URL}/api/auth/login`);
+        
+        const response = await fetch(`${API_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -40,13 +42,11 @@ formLogin.addEventListener('submit', async (e) => {
         
         const data = await response.json();
         
-        // Guardar token y datos del usuario
         localStorage.setItem('token', data.token);
         localStorage.setItem('usuario', JSON.stringify(data.usuario));
         
         console.log('✅ Login exitoso');
         
-        // Redirigir
         window.location.href = 'adminUsuario.html';
         
     } catch (error) {

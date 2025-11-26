@@ -1,13 +1,13 @@
 // frontend/src/auth/verificarAuth.js
 const verificarAutenticacion = () => {
-    const token = localStorage.getItem('token');
-    const usuario = localStorage.getItem('usuario');
+    //const token = localStorage.getItem('token');
+    //const usuario = localStorage.getItem('usuario');
     
-    if (!token || !usuario) {
+    //if (!token || !usuario) {
         // No hay sesión, redirigir a login
-        window.location.href = 'login.html';  // ← Sin "pages/"
-        return false;
-    }
+       // window.location.href = 'login.html';  // ← Sin "pages/"
+     //   return false;
+   // }
     
     return true;
 };
