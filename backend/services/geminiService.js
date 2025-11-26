@@ -14,7 +14,7 @@ Reglas importantes:
 - Si no sabes algo, admítelo
 - Sé paciente y motivador
 - Usa formato LaTeX para fórmulas matemáticas: usa $...$ para inline y $$...$$ para bloques
-- Usa bloques de código con triple comilla invertida (```) para ejemplos de código
+- Usa bloques de código con triple comilla invertida (\`\`\`) para ejemplos de código
 - Usa **texto** para negritas
 - Usa listas con guión (-) o asterisco (*)
 
@@ -42,7 +42,7 @@ const enviarMensajeGemini = async (mensaje, historial = []) => {
     try {
         // ✅ MODELO CORRECTO: gemini-1.5-flash
         const model = genAI.getGenerativeModel({ 
-            model: 'gemini-1.5-flash'
+            model: 'gemini-2.5-flash-preview-09-2025'
         });
         
         // Construir el historial en formato de Gemini
